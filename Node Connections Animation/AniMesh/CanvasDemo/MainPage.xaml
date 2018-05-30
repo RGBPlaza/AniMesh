@@ -1,0 +1,36 @@
+﻿<Page
+    x:Class="CanvasDemo.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CanvasDemo"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{StaticResource SystemControlBaseLowAcrylicWindowBrush}" Padding="16,8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock FontSize="32" FontFamily="Assets/Fonts/MoonLight.otf#Moon" Text="AniMesh" Margin="8"/>
+
+        <Canvas Name="MyCanvas" Grid.Row="1" Background="Transparent"/>
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="16">
+            <StackPanel>
+                <TextBlock Name="NodeCountTextBlock" Text="Nodes: 16" FontFamily="Assets/Fonts/MoonLight.otf#Moon" FontSize="20"/>
+                <Slider Name="NodeCountSlider" Minimum="5" Maximum="50" Value="16" Width="300"/>
+            </StackPanel>
+            <StackPanel>
+                <TextBlock Name="SpeedTextBlock" Text="Speed: 10.0" FontFamily="Assets/Fonts/MoonLight.otf#Moon" FontSize="20"/>
+                <Slider Name="SpeedSlider" Minimum="1" Maximum="50" Value="10" Width="300" StepFrequency="0.1"/>
+            </StackPanel>
+        </StackPanel>
+        
+    </Grid>
+</Page>
