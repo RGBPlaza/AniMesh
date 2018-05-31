@@ -14,8 +14,8 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MinWidth="150" MaxWidth="300"/>
-            <ColumnDefinition MinWidth="150" MaxWidth="300"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
@@ -26,12 +26,12 @@
 
         <Canvas Name="MyCanvas" Grid.RowSpan="3" Grid.ColumnSpan="6"  Margin="-16,-8" Background="Transparent"/>
 
-        <StackPanel Name="NodeCountStackPanel" Grid.Row="2">
+        <StackPanel Name="NodeCountStackPanel" Grid.Row="2" MinWidth="150" MaxWidth="300">
             <TextBlock Name="NodeCountTextBlock" Text="Nodes: 16" FontFamily="Assets/Fonts/MoonLight.otf#Moon" FontSize="20"/>
             <Slider Name="NodeCountSlider" Minimum="5" Maximum="50" Value="16"/>
         </StackPanel>
 
-        <StackPanel Name="SpeedStackPanel" Grid.Row="2" Grid.Column="1">
+        <StackPanel Name="SpeedStackPanel" Grid.Row="2" Grid.Column="1" MinWidth="150" MaxWidth="300">
             <TextBlock Name="SpeedTextBlock" Text="Speed: 10.0" FontFamily="Assets/Fonts/MoonLight.otf#Moon" FontSize="20"/>
             <Slider Name="SpeedSlider" Minimum="1" Maximum="50" Value="10" StepFrequency="0.1"/>
         </StackPanel>

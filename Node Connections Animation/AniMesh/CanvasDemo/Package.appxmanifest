@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="843cd1a2-8b2f-4fa5-be64-6bf5e80a8312" Publisher="CN=rayre" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="843cd1a2-8b2f-4fa5-be64-6bf5e80a8312" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="36218RGBPlazaDevelopment.ConstellationGenerator" Publisher="CN=06C31439-A562-4711-AF84-C0F7B3AC9AD9" Version="1.1.1.0" />
+  <mp:PhoneIdentity PhoneProductId="4155aeec-d00a-469d-8a36-4ad476b57f76" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>CanvasDemo</DisplayName>
-    <PublisherDisplayName>rayre</PublisherDisplayName>
+    <DisplayName>Constellation Generator</DisplayName>
+    <PublisherDisplayName>RGBPlaza</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
