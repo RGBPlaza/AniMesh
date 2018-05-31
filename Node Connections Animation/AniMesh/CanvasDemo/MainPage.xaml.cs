@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Constellations;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -31,6 +33,7 @@ namespace CanvasDemo
         public static double canvasHeight = 0;
 
         public Stopwatch stopwatch = new Stopwatch();
+        bool isPlaying = true;
 
         int nodeCount = 16;
         float speedMultiplyer = 10.0f;
@@ -43,6 +46,8 @@ namespace CanvasDemo
             MyCanvas.SizeChanged += MyCanvas_SizeChanged;
             NodeCountSlider.ValueChanged += NodeCountSlider_ValueChanged;
             SpeedSlider.ValueChanged += SpeedSlider_ValueChanged;
+            Window.Current.Content.KeyDown += OnKeyDown;
+            ApplicationView.GetForCurrentView().VisibleBoundsChanged += MainPage_VisibleBoundsChanged;
         }
 
         public void InitaliseNodes()
@@ -95,7 +100,7 @@ namespace CanvasDemo
 
         public async Task UpdateLoop()
         {
-            while (true)
+            while (isPlaying)
             {
                 float deltaTime = Math.Max(speedMultiplyer * stopwatch.ElapsedMilliseconds / 100, 0.5f);
                 try
@@ -142,8 +147,8 @@ namespace CanvasDemo
                                     line.X1 = currentNode.Position.X + (currentNode.Diameter / 2);
                                     line.Y1 = currentNode.Position.Y + (currentNode.Diameter / 2);
 
-                                    line.X2 = passingNode.Position.X + (currentNode.Diameter / 2);
-                                    line.Y2 = passingNode.Position.Y + (currentNode.Diameter / 2);
+                                    line.X2 = passingNode.Position.X + (passingNode.Diameter / 2);
+                                    line.Y2 = passingNode.Position.Y + (passingNode.Diameter / 2);
 
                                     line.Opacity = (48 / distance) - 0.1;
                                 }
@@ -179,73 +184,80 @@ namespace CanvasDemo
             speedMultiplyer = (float)e.NewValue;
         }
 
-    }
-
-    public class Node
-    {
-        // Mechanics
-        public Vector2 Dir;
-        public Point Position;
-        public double Velocity;
-
-        // Visuals
-        static Random rand = new Random();
-        public double Diameter;
-
-        public Node()
+        private void TogglePlaying()
         {
-            Position = new Point(rand.NextDouble() * MainPage.canvasWidth, rand.NextDouble() * MainPage.canvasHeight);
-            Dir = new Vector2(rand.Next(-32, 33), rand.Next(-32, 33));
-            Velocity = (rand.NextDouble() * 2) + 1;
-            Diameter = (rand.NextDouble() * 2) + 4;
+            isPlaying = !isPlaying;
+            if (isPlaying)
+            {
+                PlayPauseButton.Content = new SymbolIcon(Symbol.Pause);
+
+                stopwatch.Restart();
+                Task.Run(UpdateLoop);
+            }
+            else
+                PlayPauseButton.Content = new SymbolIcon(Symbol.Play);
         }
 
-        public void ResetMechanics()
+        private void SetControlVisibility(Visibility visibility)
         {
-            int sideToStart = rand.Next(0, 4);
-            if (sideToStart == 0)
+            TitleTextBlock.Visibility = visibility;
+            NodeCountStackPanel.Visibility = visibility;
+            SpeedStackPanel.Visibility = visibility;
+            PlayPauseButton.Visibility = visibility;
+            FullScreenButton.Visibility = visibility;
+            CompactOverlayButton.Visibility = visibility;
+        }
+
+        private void FullScreenButton_Click(object sender, RoutedEventArgs e)
+        {
+            ApplicationView applicationView = ApplicationView.GetForCurrentView();
+            if (ApplicationView.GetForCurrentView().TryEnterFullScreenMode())
             {
-                Position = new Point(0, rand.NextDouble() * (MainPage.canvasHeight - Diameter));
-                Dir = new Vector2(rand.Next(0, 33), rand.Next(-32, 33));
+                SetControlVisibility(Visibility.Collapsed);
+                Window.Current.CoreWindow.PointerCursor = null;
             }
-            else if (sideToStart == 1)
+        }
+
+        private async void OnKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            ApplicationView applicationView = ApplicationView.GetForCurrentView();
+            if (e.Key == Windows.System.VirtualKey.Escape && applicationView.IsFullScreenMode)
+                applicationView.ExitFullScreenMode();
+            else if (e.Key == Windows.System.VirtualKey.Escape && applicationView.ViewMode == ApplicationViewMode.CompactOverlay)
             {
-                Position = new Point(rand.NextDouble() * (MainPage.canvasWidth - Diameter), 0);
-                Dir = new Vector2(rand.Next(-32, 33), rand.Next(0, 33));
+                MyCanvas.Margin = new Thickness(-16, -8, -16, -8);
+                await applicationView.TryEnterViewModeAsync(ApplicationViewMode.Default);
             }
-            else if (sideToStart == 2)
+            else if (e.Key == Windows.System.VirtualKey.Space)
+                TogglePlaying();
+        }
+        
+        private void PlayPauseButton_Click(object sender, RoutedEventArgs e)
+        {
+            TogglePlaying();
+        }
+
+        private void MainPage_VisibleBoundsChanged(ApplicationView sender, object args)
+        {
+            if (!sender.IsFullScreenMode && sender.ViewMode != ApplicationViewMode.CompactOverlay)
             {
-                Position = new Point(MainPage.canvasWidth - Diameter, rand.NextDouble() * (MainPage.canvasHeight - Diameter));
-                Dir = new Vector2(rand.Next(-32, 0), rand.Next(-32, 33));
+                SetControlVisibility(Visibility.Visible);
+                Window.Current.CoreWindow.PointerCursor = new CoreCursor(CoreCursorType.Arrow, 0);
             }
             else
             {
-                Position = new Point(rand.NextDouble() * (MainPage.canvasWidth - Diameter), MainPage.canvasHeight - Diameter);
-                Dir = new Vector2(rand.Next(-32, 33), rand.Next(-32, 0));
+                Focus(FocusState.Programmatic);
+            }
+        }
+
+        private async void CompactOverlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            ApplicationView applicationView = ApplicationView.GetForCurrentView();
+            if (await applicationView.TryEnterViewModeAsync(ApplicationViewMode.CompactOverlay))
+            {
+                SetControlVisibility(Visibility.Collapsed); MyCanvas.Margin = new Thickness(32);
             }
 
-            Velocity = (rand.NextDouble() * 2) + 1;
-            Diameter = (rand.NextDouble() * 2) + 4;
         }
-
-        public double GetDistanceFrom(Node node)
-        {
-            double dx = node.Position.X - Position.X;
-            double dy = node.Position.Y - Position.Y;
-
-            return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2));
-        }
-
-        public void Update(double deltaTime)
-        {
-            Vector2 moveBy = Vector2.Multiply((float)(deltaTime * Velocity), (Vector2.Normalize(Dir)));
-            Position.X += moveBy.X;
-            Position.Y += moveBy.Y;
-
-            if (Position.X < 0 || Position.X > MainPage.canvasWidth - Diameter || Position.Y < 0 || Position.Y > MainPage.canvasHeight - Diameter)
-                ResetMechanics();
-        }
-
     }
-
 }

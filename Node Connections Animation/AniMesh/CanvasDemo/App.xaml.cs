@@ -5,8 +5,10 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -71,6 +73,14 @@ namespace CanvasDemo
                 // Ensure the current window is active
                 Window.Current.Activate();
             }
+
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.ButtonBackgroundColor = Windows.UI.Colors.Transparent;
+            titleBar.ButtonForegroundColor = (Windows.UI.Color)Current.Resources["SystemBaseHighColor"];
+            titleBar.ButtonInactiveBackgroundColor = Windows.UI.Colors.Transparent;
+            titleBar.ButtonInactiveForegroundColor = (Windows.UI.Color)Current.Resources["SystemBaseHighColor"];
+
         }
 
         /// <summary>

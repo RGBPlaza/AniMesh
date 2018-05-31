@@ -7,30 +7,38 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{StaticResource SystemControlBaseLowAcrylicWindowBrush}" Padding="16,8">
+    <Grid Background="{StaticResource SystemControlAcrylicWindowBrush}" Padding="16,8" ColumnSpacing="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="150" MaxWidth="300"/>
+            <ColumnDefinition MinWidth="150" MaxWidth="300"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock FontSize="32" FontFamily="Assets/Fonts/MoonLight.otf#Moon" Text="AniMesh" Margin="8"/>
+        <TextBlock Name="TitleTextBlock" FontSize="32" Grid.ColumnSpan="6" FontFamily="Assets/Fonts/MoonLight.otf#Moon" Text="Constellations" Margin="8"/>
 
-        <Canvas Name="MyCanvas" Grid.Row="1" Background="Transparent"/>
-        
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="16">
-            <StackPanel>
-                <TextBlock Name="NodeCountTextBlock" Text="Nodes: 16" FontFamily="Assets/Fonts/MoonLight.otf#Moon" FontSize="20"/>
-                <Slider Name="NodeCountSlider" Minimum="5" Maximum="50" Value="16" Width="300"/>
-            </StackPanel>
-            <StackPanel>
-                <TextBlock Name="SpeedTextBlock" Text="Speed: 10.0" FontFamily="Assets/Fonts/MoonLight.otf#Moon" FontSize="20"/>
-                <Slider Name="SpeedSlider" Minimum="1" Maximum="50" Value="10" Width="300" StepFrequency="0.1"/>
-            </StackPanel>
+        <Canvas Name="MyCanvas" Grid.RowSpan="3" Grid.ColumnSpan="6"  Margin="-16,-8" Background="Transparent"/>
+
+        <StackPanel Name="NodeCountStackPanel" Grid.Row="2">
+            <TextBlock Name="NodeCountTextBlock" Text="Nodes: 16" FontFamily="Assets/Fonts/MoonLight.otf#Moon" FontSize="20"/>
+            <Slider Name="NodeCountSlider" Minimum="5" Maximum="50" Value="16"/>
         </StackPanel>
-        
+
+        <StackPanel Name="SpeedStackPanel" Grid.Row="2" Grid.Column="1">
+            <TextBlock Name="SpeedTextBlock" Text="Speed: 10.0" FontFamily="Assets/Fonts/MoonLight.otf#Moon" FontSize="20"/>
+            <Slider Name="SpeedSlider" Minimum="1" Maximum="50" Value="10" StepFrequency="0.1"/>
+        </StackPanel>
+
+        <Button Name="PlayPauseButton" FontFamily="Segoe MDL2 Assets" FontSize="20" Grid.Row="2" Grid.Column="3" Style="{StaticResource ButtonRevealStyle}" Content="&#xE103;" Height="48" Width="48" Background="Transparent" Click="PlayPauseButton_Click"/>
+        <Button Name="FullScreenButton" FontFamily="Segoe MDL2 Assets" FontSize="20" Grid.Row="2" Grid.Column="4" Style="{StaticResource ButtonRevealStyle}" Content="&#xE1D9;" Height="48" Width="48" Background="Transparent" Click="FullScreenButton_Click"/>
+        <Button Name="CompactOverlayButton" FontFamily="Segoe MDL2 Assets" FontSize="20" Grid.Row="2" Grid.Column="5" Style="{StaticResource ButtonRevealStyle}" Content="&#xE1D8;" Height="48" Width="48" Background="Transparent" Click="CompactOverlayButton_Click"/>
+
     </Grid>
 </Page>
