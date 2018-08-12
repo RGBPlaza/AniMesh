@@ -39,6 +39,7 @@
         <Button Name="PlayPauseButton" FontFamily="Segoe MDL2 Assets" FontSize="20" Grid.Row="2" Grid.Column="3" Style="{StaticResource ButtonRevealStyle}" Content="&#xE103;" Height="48" Width="48" Background="Transparent" Click="PlayPauseButton_Click"/>
         <Button Name="FullScreenButton" FontFamily="Segoe MDL2 Assets" FontSize="20" Grid.Row="2" Grid.Column="4" Style="{StaticResource ButtonRevealStyle}" Content="&#xE1D9;" Height="48" Width="48" Background="Transparent" Click="FullScreenButton_Click"/>
         <Button Name="CompactOverlayButton" FontFamily="Segoe MDL2 Assets" FontSize="20" Grid.Row="2" Grid.Column="5" Style="{StaticResource ButtonRevealStyle}" Content="&#xE1D8;" Height="48" Width="48" Background="Transparent" Click="CompactOverlayButton_Click"/>
+        <Button Name="wallButton" Click="Set_Wall">Set Wall</Button>
 
     </Grid>
 </Page>

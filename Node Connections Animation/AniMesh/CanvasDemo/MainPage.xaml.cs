@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -19,6 +20,12 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using SimpleImageEditing;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.Graphics.Imaging;
+using Windows.Storage.Pickers;
+using Windows.Storage;
+using Windows.System.UserProfile;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -38,7 +45,7 @@ namespace CanvasDemo
         int nodeCount = 16;
         float speedMultiplyer = 10.0f;
         List<Node> nodes = new List<Node>();
-        
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -57,7 +64,7 @@ namespace CanvasDemo
                 Node node = new Node();
                 nodes.Add(node);
 
-                Ellipse ellipse = new Ellipse() { Width = node.Diameter, Height = node.Diameter, Fill = (Brush)Application.Current.Resources["SystemControlBackgroundBaseHighBrush"], Opacity = node.Diameter/6, Name = $"Node_{i}" };
+                Ellipse ellipse = new Ellipse() { Width = node.Diameter, Height = node.Diameter, Fill = (Brush)Application.Current.Resources["SystemControlBackgroundBaseHighBrush"], Opacity = node.Diameter / 6, Name = $"Node_{i}" };
                 Canvas.SetLeft(ellipse, node.Position.X);
                 Canvas.SetTop(ellipse, node.Position.Y);
                 MyCanvas.Children.Add(ellipse);
@@ -113,7 +120,8 @@ namespace CanvasDemo
                         await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                         {
                             UIElement element = (UIElement)FindName($"Node_{i}");
-                            if (element != null) {
+                            if (element != null)
+                            {
                                 Canvas.SetLeft(element, currentNode.Position.X);
                                 Canvas.SetTop(element, currentNode.Position.Y);
                             }
@@ -125,7 +133,7 @@ namespace CanvasDemo
 
                             double distance = currentNode.GetDistanceFrom(passingNode);
 
-                            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                             {
 
                                 Line line = (Line)FindName($"Line_{i}_{j}");
@@ -177,7 +185,7 @@ namespace CanvasDemo
             nodeCount = (int)e.NewValue;
             InitaliseNodes();
         }
-        
+
         private void SpeedSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             SpeedTextBlock.Text = $"Speed: {Math.Round((decimal)e.NewValue, 1, MidpointRounding.AwayFromZero)}";
@@ -231,7 +239,7 @@ namespace CanvasDemo
             else if (e.Key == Windows.System.VirtualKey.Space)
                 TogglePlaying();
         }
-        
+
         private void PlayPauseButton_Click(object sender, RoutedEventArgs e)
         {
             TogglePlaying();
@@ -259,5 +267,49 @@ namespace CanvasDemo
             }
 
         }
+
+        private async Task SaveCanvasAsImage(StorageFile file)
+        {
+            using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                RenderTargetBitmap rtb = new RenderTargetBitmap();
+                BitmapEncoder bmpEncoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, stream);
+                
+                await rtb.RenderAsync(MyCanvas);
+                var buffer = await rtb.GetPixelsAsync();
+
+                SoftwareBitmap softwareBitmap = SoftwareBitmap.CreateCopyFromBuffer(buffer, BitmapPixelFormat.Bgra8, rtb.PixelWidth, rtb.PixelHeight);
+                bmpEncoder.SetSoftwareBitmap(softwareBitmap);
+                await bmpEncoder.FlushAsync();
+            }
+        }
+
+        private async Task SetWallpaperToCanvas()
+        {
+            while (true)
+            {
+                try
+                {
+                    StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync($@"{Guid.NewGuid()}.bmp", CreationCollisionOption.ReplaceExisting);
+                    Debug.WriteLine($@"{Guid.NewGuid()}.bmp");
+
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Low, async () => await SaveCanvasAsImage(file));
+
+                    await UserProfilePersonalizationSettings.Current.TrySetWallpaperImageAsync(file);
+                    await Task.Delay(1000);
+                    await file.DeleteAsync();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        private async void Set_Wall(object sender, RoutedEventArgs e)
+        {
+            await Task.Run(SetWallpaperToCanvas);
+        }
+
     }
 }
